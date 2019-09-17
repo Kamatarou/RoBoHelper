@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<hvml version="2.0">
+  <head>
+    <producer>sofcom19_robohon.o_hara.jp.ac.robohelper</producer>
+    <description>顔認識の前準備をする</description>
+    <scene value="sofcom19_robohon.o_hara.jp.ac.robohelper.scene01"/>
+    <version value="1.0"/>
+    <tool_version>1.00</tool_version>
+    <situation priority="78" topic_id="t1" trigger="user-word">ねぇ in ${Lvcsr:Basic}</situation>
+    <situation priority="78" topic_id="t1" trigger="user-word">聞いて in ${Lvcsr:Basic}</situation>
+    <situation priority="78" topic_id="t1" trigger="user-word">ねぇロボホン in ${Lvcsr:Basic}</situation>
+    <situation priority="78" topic_id="t1" trigger="user-word">ロボホンあのね in ${Lvcsr:Basic}</situation>
+    <situation priority="78" topic_id="t1" trigger="user-word">あのね in ${Lvcsr:Basic}</situation>
+  </head>
+  <body>
+    <topic id="t1" listen="false">
+      <rule>
+        <condition case_id="c1" weight="10"/>
+        <condition case_id="c2" weight="15"/>
+        <condition case_id="c3" weight="20"/>
+      </rule>
+      <case id="c1">
+        <action index="1">
+          <speech>${resolver:speech_ok(${resolver:ok_id})}</speech>
+          <behavior id="assing" type="normal"/>
+        </action>
+        <next href="#t2" type="default"/>
+      </case>
+      <case id="c2">
+        <action index="1">
+          <speech>どうしたの？</speech>
+          <behavior id="assing" type="normal"/>
+        </action>
+        <next href="#t3" type="default"/>
+      </case>
+      <case id="c3">
+        <action index="1">
+          <speech>なぁに？</speech>
+          <behavior id="assing" type="normal"/>
+        </action>
+        <next href="#t3" type="default"/>
+      </case>
+    </topic>
+    <topic id="t2" listen="false">
+      <action index="1">
+        <speech>何でも聞くよ</speech>
+        <behavior id="assing" type="normal"/>
+      </action>
+      <next href="#t3" type="default"/>
+    </topic>
+    <topic id="t3" listen="true">
+      <a href="#t5">
+        <situation trigger="user-word">ＶＯＩＣＥＰＦ＿ＥＲＲ in ${Lvcsr:Basic}</situation>
+      </a>
+      <a href="#t4" type="default"/>
+      <next href="#t5" type="default"/>
+    </topic>
+    <topic id="t4" listen="false">
+      <action index="1">
+        <speech>ふむふむ。</speech>
+        <behavior id="assing" type="normal"/>
+        <control function="func_listen" target="sofcom19_robohon.o_hara.jp.ac.robohelper">
+          <data key="listen_value" value="${Lvcsr:Basic}"/>
+        </control>
+      </action>
+    </topic>
+    <topic id="t5" listen="false">
+      <action index="1">
+        <speech>うまく聞き取れなかったよ</speech>
+        <behavior id="assing" type="normal"/>
+      </action>
+    </topic>
+  </body>
+</hvml>

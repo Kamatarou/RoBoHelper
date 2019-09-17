@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "770731301137",
+    "firebase_url": "https://chat001-16c14.firebaseio.com",
+    "project_id": "chat001-16c14",
+    "storage_bucket": "chat001-16c14.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770731301137:android:f2e533185bab7f7250d4b0",
+        "android_client_info": {
+          "package_name": "sofcom19_robohon.o_hara.jp.ac.robohelper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770731301137-k5els539q7jjld3u0sretru0fdv14490.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sofcom19_robohon.o_hara.jp.ac.robohelper",
+            "certificate_hash": "e3ca8f8e257f30cd0223e1c26a114c583adba7c3"
+          }
+        },
+        {
+          "client_id": "770731301137-h1ac9gcd3crg11m8qd82fur8528on1do.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmIoYpC9sLi0cfavpnawEkaTxuTNzGVFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770731301137-h1ac9gcd3crg11m8qd82fur8528on1do.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
