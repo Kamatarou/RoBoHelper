@@ -17,6 +17,7 @@ import android.widget.Toolbar;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -132,14 +133,18 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     * FirebaseReferenceを取得する
     */
     private DatabaseReference mDatabase;
-    /*
+    /**
     * FirebaseRealTimedatabseへの階層指定につかう
     */
     private String Fkey;
-    /*
+    /**
      * セリフを格納する
      */
     private String mSpeechTxt = "";
+    /**
+     * 会話相手の管理を行う
+     */
+    private boolean stat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +168,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //TODO プロジェクタイベントの検知登録(プロジェクター利用時のみ).
         //setProjectorEventReceiver();
 
-        //TODO カメラ連携起動結果取得用レシーバー登録(カメラ利用時のみ).
+        //カメラ連携起動結果取得用レシーバー登録(カメラ利用時のみ).
         mCameraResultReceiver = new CameraResultReceiver();
         IntentFilter filterCamera = new IntentFilter(ACTION_RESULT_TAKE_PICTURE);
         filterCamera.addAction(ACTION_RESULT_REC_MOVIE);
@@ -189,6 +194,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //mSongResultReceiver = new SongResultReceiver();
         //IntentFilter filterSong = new IntentFilter(ACTION_RESULT_SONG);
         //registerReceiver(mSongResultReceiver, filterSong);
+
 
         //Firebase Database用のレシーバ登録（？）
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -260,7 +266,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     e.printStackTrace();
                 }
 
-                //TODO ここで発話アクション
+                //発話する文字を代入
                 mSpeechTxt = FastVal;
                 Log.d(TAG, "onData mSpeechTxt: " + mSpeechTxt);
                 basicSpeech();
@@ -274,6 +280,46 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             }
         });
 
+        //会話をボットで行うかチャットで行うかのフラグ管理に変更がある場合
+        mDatabase.child("stats").child("isBot").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                stat = dataSnapshot.getValue(boolean.class);
+                Log.d(TAG, "onData talking to: " + stat);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("TAG", "Failed to read value :"+ databaseError.toException());
+            }
+        });
+
+        mDatabase.child("chat").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -389,9 +435,12 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 break;
             case ScenarioDefinitions.FUNC_LISTEN:
                 final String word = VoiceUIVariableUtil.getVariableData(variables, ScenarioDefinitions.KEY_LISTEN_VALUE);
-
-
-                    basicWrite(word);
+                    if(stat){
+                        sendMyAPI(word);
+                    }
+                    else {
+                        basicWrite(word);
+                    }
                 break;
 
             default:
@@ -746,8 +795,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     }
 
     /**
-     * データベースへ書き込む<br>
-     * <p/>
+     * データベースへ書き込む
      */
     private void basicWrite(String str){
         Log.v("WP", "basicWrinte(String)");
@@ -774,6 +822,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
     }
 
+    /**
+    * データベースから拾ったものをしゃべらせる
+    */
     private void basicSpeech(){
         Log.i(TAG, "basicSpeech() ");
         if(mVoiceUIManager != null && !mSpeechTxt.equals("") ){
@@ -782,6 +833,13 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_SPEECH);
             VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
         }
+    }
+
+    /**
+    *  受け取った発話文字をDialogflowへ飛ばす
+    */
+    private void sendMyAPI(String word){
+        Log.d(TAG, "sendMyAPI: It's No Function");
     }
 
 }
