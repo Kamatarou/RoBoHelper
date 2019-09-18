@@ -222,13 +222,13 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         Log.v("WP", "onStatr()");
 
         //サーバーが更新されたら呼び出されるリスナーを用意
-        mDatabase.child("stats").child("test").addValueEventListener(new ValueEventListener() {
+        mDatabase.child("chat").addValueEventListener(new ValueEventListener() {
             String FastVal ="";
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 HashMap<String , Object> Array_Index = new HashMap<>();
                 int Index = 0;
-                Long length = 0L;
+                Long length;
                 Array_Index.clear();
 
                 length = dataSnapshot.getChildrenCount() - 1;
@@ -241,7 +241,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
                 try {
                     JSONObject jsonObject = new JSONObject(Array_Index);
-                    for(Long L=length; L > 0; L--) {
+                    for(Long L=length; L >= 0; L--) {
                         JSONObject jsonObject1 = jsonObject.getJSONObject(L.toString());
                         Fkey = jsonObject1.getString("firebaseKey");
                         if (jsonObject1.getString("device").equals("Android")) {
@@ -262,7 +262,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
                 //TODO ここで発話アクション
                 mSpeechTxt = FastVal;
-                Log.d(TAG, "onDataChange: " + mSpeechTxt);
+                Log.d(TAG, "onData mSpeechTxt: " + mSpeechTxt);
                 basicSpeech();
 
                 //Log.d(TAG, "post is :"+ FastVal);
@@ -385,10 +385,12 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 break;
             case ScenarioDefinitions.FUNC_SPEECH_AFTER:
                 //発話完了後、発話フラグを折る
-                mDatabase.child("stats").child("test").child(Fkey).child("isSpeech").setValue(false);
+                mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
                 break;
             case ScenarioDefinitions.FUNC_LISTEN:
                 final String word = VoiceUIVariableUtil.getVariableData(variables, ScenarioDefinitions.KEY_LISTEN_VALUE);
+
+
                     basicWrite(word);
                 break;
 
@@ -755,7 +757,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         Log.i(TAG, "basicWrite: " + mDatabase.push());
         MessageData messageData = new MessageData(key,"Android",str);
 
-        Task task = mDatabase.child("stats").child("test").child(key).setValue(messageData);
+        Task task = mDatabase.child("chat").child(key).setValue(messageData);
 
         //書き込んだ結果の通知（+エラーハンドリング）
         task.addOnSuccessListener(new OnSuccessListener() {
@@ -773,7 +775,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     }
 
     private void basicSpeech(){
-        Log.i(TAG, "basicSpeech: ");
+        Log.i(TAG, "basicSpeech() ");
         if(mVoiceUIManager != null && !mSpeechTxt.equals("") ){
             Log.d(TAG, "onResume: "+ScenarioDefinitions.ACC_SPEECH);
             Log.d(TAG, "onClick: " + mSpeechTxt);
