@@ -6,11 +6,12 @@
     <scene value="sofcom19_robohon.o_hara.jp.ac.robohelper.scene01"/>
     <version value="1.0"/>
     <tool_version>1.00</tool_version>
-    <situation priority="78" topic_id="t1" trigger="user-word">ねぇ in ${Lvcsr:Basic}</situation>
-    <situation priority="78" topic_id="t1" trigger="user-word">聞いて in ${Lvcsr:Basic}</situation>
-    <situation priority="78" topic_id="t1" trigger="user-word">ねぇロボホン in ${Lvcsr:Basic}</situation>
-    <situation priority="78" topic_id="t1" trigger="user-word">ロボホンあのね in ${Lvcsr:Basic}</situation>
-    <situation priority="78" topic_id="t1" trigger="user-word">あのね in ${Lvcsr:Basic}</situation>
+    <situation priority="75" topic_id="t1" trigger="user-word">ねぇ in ${Lvcsr:Basic}</situation>
+    <situation priority="75" topic_id="t1" trigger="user-word">聞いて in ${Lvcsr:Basic}</situation>
+    <situation priority="70" topic_id="t1" trigger="user-word">ねぇロボホン in ${Lvcsr:Basic}</situation>
+    <situation priority="70" topic_id="t1" trigger="user-word">ロボホンあのね in ${Lvcsr:Basic}</situation>
+    <situation priority="73" topic_id="t1" trigger="user-word">あのね in ${Lvcsr:Basic}</situation>
+    <situation priority="75" topic_id="t1" trigger="user-word">${Lvcsr:Basic} include [ねぇ,聞いて,あのね,ねぇねぇ,ねぇねぇロボホン]</situation>>
   </head>
   <body>
     <topic id="t1" listen="false">
@@ -61,6 +62,7 @@
         <behavior id="assing" type="normal"/>
         <control function="func_listen" target="sofcom19_robohon.o_hara.jp.ac.robohelper">
           <data key="listen_value" value="${Lvcsr:Basic}"/>
+          <data key="listen_kata" value="${Lvcsr:Kana}" />
         </control>
       </action>
     </topic>
