@@ -249,8 +249,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     JSONObject jsonObject = new JSONObject(Array_Index);
                     for(Long L=length; L >= 0; L--) {
                         JSONObject jsonObject1 = jsonObject.getJSONObject(L.toString());
+                        //Log.d(TAG, "onDataChange: "+ jsonObject1);
                         Fkey = jsonObject1.getString("firebaseKey");
-                        if (jsonObject1.getString("device").equals("Android")) {
+                        if (!(jsonObject1.getString("device").equals("Android")) ) {
                             Log.d(TAG, "onData isspeech->: " + jsonObject1.getString("isSpeech").equals("true"));
                             if(jsonObject1.getString("isSpeech").equals("true")) {
                                 //デバイスが（今はテスト中なので）Androidから発信したもので発話フラグが消えてないものを発話する
@@ -434,7 +435,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
                 break;
             case ScenarioDefinitions.FUNC_LISTEN:
+                String key = "listen_kata";
                 final String word = VoiceUIVariableUtil.getVariableData(variables, ScenarioDefinitions.KEY_LISTEN_VALUE);
+                final String kana = VoiceUIVariableUtil.getVariableData(variables, key);
+                Log.d(TAG, "onExec Kana: "+ kana);
                     if(stat){
                         sendMyAPI(word);
                     }
