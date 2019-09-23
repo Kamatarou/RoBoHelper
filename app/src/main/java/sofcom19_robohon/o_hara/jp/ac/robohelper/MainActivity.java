@@ -145,6 +145,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      * 会話相手の管理を行う
      */
     private boolean stat;
+    /**
+     * Httpからの変数格納に使う
+     */
+    public String pSpeechTxt = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +220,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             @Override
             public void onClick(View view) {
                 //basicWrite("こんにちは！");
+                sendMyAPI("こんにちは");
             }
         });
 
@@ -254,7 +259,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                         if (!(jsonObject1.getString("device").equals("Android")) ) {
                             Log.d(TAG, "onData isspeech->: " + jsonObject1.getString("isSpeech").equals("true"));
                             if(jsonObject1.getString("isSpeech").equals("true")) {
-                                //デバイスが（今はテスト中なので）Androidから発信したもので発話フラグが消えてないものを発話する
+                                //デバイスがAndroid以外から発信したもので発話フラグが消えてないものを発話する
                                 FastVal = jsonObject1.getString("message");
                             }else{
                                 FastVal = "";
@@ -843,7 +848,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     *  受け取った発話文字をDialogflowへ飛ばす
     */
     private void sendMyAPI(String word){
-        Log.d(TAG, "sendMyAPI: It's No Function");
+        Log.d(TAG, "sendMyAPI: word :" + word);
+        AsyncDFTask dfTask = new AsyncDFTask();
+        dfTask.execute();
     }
 
 }
