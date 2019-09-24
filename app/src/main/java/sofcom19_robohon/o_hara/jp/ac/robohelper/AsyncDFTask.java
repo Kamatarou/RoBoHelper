@@ -15,11 +15,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class AsyncDFTask extends AsyncTask<String, Void, String> {
-
-    final String TAG = "AsyncDialogflowTask";
-    final int CONNECT_TIMEOUT = 30 * 1000;
-    final int READ_TIMEOUT = 30 * 1000;
-    private URL Url;
+    private final String TAG = "AsyncDialogflowTask";
+    //コールバック設定
+    private CallBackTask mCallBack;
 
     /**
      * 非同期処理で自作APIからDialogflowのインテントを取得
@@ -27,6 +25,9 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params){
         //結果
         String RstStr = "";
+        final int CONNECT_TIMEOUT = 30 * 1000;
+        final int READ_TIMEOUT = 30 * 1000;
+        URL Url;
 
         try{
             //URLの設定
@@ -103,8 +104,17 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-
-
         Log.d(TAG, "onPostExecute: " + result);
+        mCallBack.CallBack(result);
+    }
+
+    //コールバック諸々処理
+    public void setmCallBack(CallBackTask task){
+        mCallBack = task;
+    }
+
+    //コールバック用のインターフェイス定義
+    interface CallBackTask{
+        void CallBack(String result);
     }
 }

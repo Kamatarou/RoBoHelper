@@ -148,7 +148,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     /**
      * Httpからの変数格納に使う
      */
-    public String pSpeechTxt = "";
+    public static String pSpeechTxt = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -437,7 +437,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 break;
             case ScenarioDefinitions.FUNC_SPEECH_AFTER:
                 //発話完了後、発話フラグを折る
-                mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
+                if(!stat){
+                    mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
+                }
                 break;
             case ScenarioDefinitions.FUNC_LISTEN:
                 String key = "listen_kata";
@@ -851,6 +853,16 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         Log.d(TAG, "sendMyAPI: word :" + word);
         AsyncDFTask dfTask = new AsyncDFTask();
         dfTask.execute(word);
-    }
 
+        //非同期処理後処理
+        dfTask.setmCallBack(new AsyncDFTask.CallBackTask(){
+            public void CallBack(String result){
+                mSpeechTxt = result;
+                Log.d(TAG, "sendMyAPI: "+ mSpeechTxt);
+
+                VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_SPEECH);
+                VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+            }
+        });
+    }
 }
