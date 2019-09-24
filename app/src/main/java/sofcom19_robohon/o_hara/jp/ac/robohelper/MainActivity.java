@@ -850,7 +850,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     private void sendMyAPI(String word){
         Log.d(TAG, "sendMyAPI: word :" + word);
         AsyncDFTask dfTask = new AsyncDFTask();
-        dfTask.execute();
+        dfTask.execute(word);
     }
 
 }

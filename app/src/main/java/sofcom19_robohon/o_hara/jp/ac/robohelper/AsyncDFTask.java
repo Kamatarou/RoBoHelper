@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AsyncDFTask extends AsyncTask<Void, Void, String> {
+public class AsyncDFTask extends AsyncTask<String, Void, String> {
 
     final String TAG = "AsyncDialogflowTask";
     final int CONNECT_TIMEOUT = 30 * 1000;
@@ -24,14 +24,20 @@ public class AsyncDFTask extends AsyncTask<Void, Void, String> {
     /**
      * 非同期処理で自作APIからDialogflowのインテントを取得
      * */
-    protected String doInBackground(Void... params){
+    protected String doInBackground(String... params){
+        //結果
+        String RstStr = "";
+
         try{
             //URLの設定
             String burl = "https://us-central1-chat001-16c14.cloudfunctions.net/app";
-            String add1 = "/api/v1/p1/testapi";
+            String add1 = "/api/v1/hubapi";
+            String add2 = "?s=" + params[0];
+
+
 
             //コネクションの確立
-            Url = new URL(burl + add1);
+            Url = new URL(burl + add1 + add2);
             HttpURLConnection connection = (HttpURLConnection)Url.openConnection();
 
             //接続設定
@@ -52,24 +58,31 @@ public class AsyncDFTask extends AsyncTask<Void, Void, String> {
             //結果取得
             int rst = connection.getResponseCode();
             String rstStr = connection.getResponseMessage();
+            //Log.d(TAG, "doInBackground: " + rstStr);
 
             switch(rst){
                 case HttpURLConnection.HTTP_OK:
+                    Log.d(TAG, "200 : OK");
                     Log.d(TAG, "doInBackground: " + rstStr);
-                    InputStream inputStream = connection.getInputStream();;
+                    InputStream inputStream = connection.getInputStream();
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                    Log.d(TAG, "doInBackground: " + bufferedReader.readLine());
                     String data = bufferedReader.readLine();
+                    Log.d(TAG, "doInBackground: " + data);
+                    JSONObject json = new JSONObject(data);
+                    String str = json.get("Response").toString();
+                    Log.d(TAG, "doInBackground: getword->" + str);
 
-                    Log.d(TAG, "doInBackground: ");
-
+                    RstStr = str;
                     bufferedReader.close();
                     inputStream.close();
                     bufferedReader.close();
                     break;
+                case HttpURLConnection.HTTP_INTERNAL_ERROR:
+                    Log.d(TAG, "500 : Internal Server Error");
+                    break;
                 default:
-                    Log.d(TAG, "No function" );
+                    Log.d(TAG, "No function");
                     break;
             }
 
@@ -79,7 +92,7 @@ public class AsyncDFTask extends AsyncTask<Void, Void, String> {
             e.printStackTrace();
         }
 
-        return null;
+        return RstStr;
     }
 
 
