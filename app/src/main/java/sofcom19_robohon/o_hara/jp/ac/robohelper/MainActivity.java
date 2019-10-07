@@ -6,13 +6,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.Toolbar;
+import android.telephony.TelephonyManager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 import java.util.Locale;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,9 +150,13 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      */
     private boolean stat;
     /**
-     * Httpからの変数格納に使う
+     * ANDROID_IDの格納を行う
      */
-    public static String pSpeechTxt = "";
+    public String UUID;
+    /**
+     * 初回起動の状態管理諸々
+     */
+    private int dataInt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +211,23 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //Firebase Database用のレシーバ登録（？）
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // AndroidIDの代入
+        UUID =  android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        //初回起動判定諸々
+        SharedPreferences sharedPreferences = getSharedPreferences("MainSetting", MODE_PRIVATE);
+        dataInt = sharedPreferences.getInt("dataIPT", 0);
+        dataInt++;
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        if(dataInt == 1){
+            Log.d("Log0","初回起動時です");
+            //ここに初回時の動作を記述
+            edit.putInt(dataIntPreTag,dataInt).apply();
+        }else{
+            Log.d("Log0",dataInt+"回目の起動です");
+            edit.putInt(dataIntPreTag,dataInt).apply();
+        }
+
         //発話ボタンの実装.
         Button Button = (Button) findViewById(R.id.accost);
         Button.setOnClickListener(new View.OnClickListener() {
@@ -220,7 +245,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             @Override
             public void onClick(View view) {
                 //basicWrite("こんにちは！");
-                sendMyAPI("こんにちは");
+                //sendMyAPI("こんにちは");
+                //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -254,8 +280,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     JSONObject jsonObject = new JSONObject(Array_Index);
                     for(Long L=length; L >= 0; L--) {
                         JSONObject jsonObject1 = jsonObject.getJSONObject(L.toString());
-                        //Log.d(TAG, "onDataChange: "+ jsonObject1);
-                        Fkey = jsonObject1.getString("firebaseKey");
+                        Log.d(TAG, "onDataChange: "+ jsonObject1);
+                        Fkey = jsonObject1.getString("firebasekey");
                         if (!(jsonObject1.getString("device").equals("Android")) ) {
                             Log.d(TAG, "onData isspeech->: " + jsonObject1.getString("isSpeech").equals("true"));
                             if(jsonObject1.getString("isSpeech").equals("true")) {

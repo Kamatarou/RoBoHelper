@@ -3,13 +3,13 @@ package sofcom19_robohon.o_hara.jp.ac.robohelper;
 public class MessageData {
     public String device;
     public String message;
-    public String firebaseKey;
+    public String firebasekey;
     public boolean isSpeech;
 
     public MessageData(String key,String dev, String msg){
         this.device = dev;
         this.message = msg;
-        this.firebaseKey  = key;
+        this.firebasekey  = key;
         this.isSpeech = true;
     }
 
@@ -18,11 +18,11 @@ public class MessageData {
     }
 
     public String getfirebaseKey(){
-        return firebaseKey;
+        return firebasekey;
     }
 
     public void setFirebaseKey(String firebaseKey){
-        this.firebaseKey = firebaseKey;
+        this.firebasekey = firebaseKey;
     }
 
     public String getDevice(){
