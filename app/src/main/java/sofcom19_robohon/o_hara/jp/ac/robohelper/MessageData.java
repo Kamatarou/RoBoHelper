@@ -17,12 +17,12 @@ public class MessageData {
         //noFunction
     }
 
-    public String getfirebaseKey(){
+    public String getfirebasekey(){
         return firebasekey;
     }
 
-    public void setFirebaseKey(String firebaseKey){
-        this.firebasekey = firebaseKey;
+    public void setfirebasekey(String firebasekey){
+        this.firebasekey = firebasekey;
     }
 
     public String getDevice(){
