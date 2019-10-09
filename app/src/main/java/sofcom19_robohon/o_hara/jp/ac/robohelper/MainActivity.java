@@ -150,6 +150,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      */
     private boolean stat;
     /**
+     * 伝言板の発話の管理をする
+     */
+    private boolean isBoard;
+    /**
      * ANDROID_IDの格納を行う
      */
     public String UUID;
@@ -215,6 +219,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         UUID =  android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
         //初回起動判定諸々
+        /*
         SharedPreferences sharedPreferences = getSharedPreferences("MainSetting", MODE_PRIVATE);
         dataInt = sharedPreferences.getInt("dataIPT", 0);
         dataInt++;
@@ -226,7 +231,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         }else{
             Log.d("Log0",dataInt+"回目の起動です");
             edit.putInt(dataIntPreTag,dataInt).apply();
-        }
+        }*/
+
+        //伝言板の初期値代入
+        isBoard = false;
 
         //発話ボタンの実装.
         Button Button = (Button) findViewById(R.id.accost);
@@ -316,8 +324,51 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         mDatabase.child("stats").child("isBot").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                stat = dataSnapshot.getValue(boolean.class);
-                Log.d(TAG, "onData talking to: " + stat);
+                try {
+                    stat = dataSnapshot.getValue(boolean.class);
+                    Log.d(TAG, "onData talking to: " + stat);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("TAG", "Failed to read value :"+ databaseError.toException());
+            }
+        });
+
+        //伝言板の内容を取得
+        mDatabase.child("msgboard").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String , Object> Array_Index = new HashMap<>();
+                int Index = 0;
+                Long length;
+                Array_Index.clear();
+
+                length = dataSnapshot.getChildrenCount() - 1;
+                Log.d(TAG, "onData length: " + length);
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Array_Index.put(String.valueOf(Index), ds.getValue());
+                    Index++;
+                    for(DataSnapshot dss : ds.getChildren()){
+                        //Log.d(TAG, "onDataChange: msgPair-> " + dss.getKey());
+                        //Log.d(TAG, "onDataChange: msgBoard-> " + dss.getValue());
+                        Array_Index.put(dss.getKey(),dss.getValue());
+                    }
+                }
+
+                //未発話の場合、喋る。ただし、初回起動時は喋らないように設定
+                if(Array_Index.get("isListen").equals("false")  && isBoard){
+                        speakMessageBoard(Array_Index);
+                }
+                else {
+                    //初回起動の処理、起動以降の伝言板の取得を行う
+                    Log.d(TAG, "onDataChange: Rejected SpeechBoard");
+                    isBoard = true;
+                }
+
             }
 
             @Override
@@ -374,7 +425,6 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //Scene有効化.
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE_COMMON);
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE01);
-
 
     }
 
@@ -890,5 +940,24 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
             }
         });
+    }
+
+    /**
+     * メッセージボードの処理
+     */
+    private void speakMessageBoard(HashMap<String, Object> MsgMap){
+        Log.d(TAG, "speakMessageBoard: " + MsgMap.get("message"));
+        Log.d(TAG, "speakMessageBoard: " + MsgMap.get("name"));
+        Log.d(TAG, "speakMessageBoard: " + MsgMap.get("time"));
+        if(MsgMap.get("time").equals("morning")){
+            Log.d(TAG, "speakMessageBoard: isMornig");
+        }
+
+        mSpeechTxt = MsgMap.get("message").toString();
+        if(mVoiceUIManager != null && !mSpeechTxt.equals("") ) {
+            Log.d(TAG, "speakMessageBoard: StartSpeach->" + mSpeechTxt);
+            VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_BOARD);
+            VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+        }
     }
 }

@@ -79,6 +79,10 @@ public class ScenarioDefinitions {
      */
     public static final String ACC_SPEECH =  ScenarioDefinitions.PACKAGE + ".acc_speech.t1";
     /**
+     * accost名：メッセージボード発話
+     */
+    public static final String ACC_BOARD =  ScenarioDefinitions.PACKAGE + ".acc_spcBoard.t1";
+    /**
      * 音声UIコールバック用定義.
      */
     public static final String COMMAND_RESOLVE_VARIABLE = "onVoiceUIResolveVariable";
