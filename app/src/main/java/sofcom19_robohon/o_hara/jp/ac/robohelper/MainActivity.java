@@ -169,6 +169,15 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      * 普段の呼びかけの管理をする
      */
     private boolean isUsually;
+    /*
+    * タイマークラス
+    */
+    private RoboTimer roboTimer;
+    private Timer timer;
+    /**
+     * インターバルタイマー定数
+     */
+    final private long INTERVAL_TIMER = 1000 * 10;
     /**
      * ANDROID_IDの格納を行う
      */
@@ -255,6 +264,13 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         isBoard = false;
         //普段の会話の初期値代入
         isUsually = false;
+        //タイマー初期化
+        timer = new Timer();
+        roboTimer = new RoboTimer(this);
+        //ディレイ20分後に初発火、その後20分ごとに発火
+        timer.scheduleAtFixedRate(roboTimer, INTERVAL_TIMER , INTERVAL_TIMER);
+        //デバッグ用
+        //timer.scheduleAtFixedRate(roboTimer, 1000 * 10 , 1000 * 30);
 
         //発話ボタンの実装.
         Button Button = (Button) findViewById(R.id.accost);
@@ -460,6 +476,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //VoiceUI再起動の検知破棄.
         this.unregisterReceiver(mVoiceUIStartReceiver);
 
+        //タイマー設定を破棄
+        roboTimer.cancel();
+
         //TODO プロジェクタイベントの検知破棄(プロジェクター利用時のみ).
         //this.unregisterReceiver(mProjectorEventReceiver);
 
@@ -548,6 +567,15 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             default:
                 break;
         }
+    }
+
+    /**
+     * 首振り顔認識を行う変数
+     */
+    // TODO:認識後の処理をする
+    public void FaceDitect_SwingHead(){
+        Log.i(TAG, "FaceDitect_SwingHead: ");
+        sendBroadcast(getIntentForFaceDetection("TRUE"));
     }
 
     /**
