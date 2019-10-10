@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.HashMap;
@@ -1081,14 +1082,21 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("message"));
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("name"));
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("time"));
-        if(MsgMap.get("time").equals("morning")){
+
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR);
+        if(MsgMap.get("time").equals("morning") && (hour >= 4 && hour <= 11)){
             Log.d(TAG, "speakMessageBoard: isMorning");
         }
-        else if(MsgMap.get("time").equals("noon")){
+        else if(MsgMap.get("time").equals("noon") && (hour >= 12 && hour <= 16)){
             Log.d(TAG, "speakMessageBoard: isNoon");
         }
-        else if(MsgMap.get("time").equals("night")){
+        else if(MsgMap.get("time").equals("night") && (hour >= 17 && hour <= 23)){
             Log.d(TAG, "speakMessageBoard: isNight");
+        }
+        else{
+            isBoard = false;
+            return;
         }
 
         mSpeechTxt = MsgMap.get("message").toString();
