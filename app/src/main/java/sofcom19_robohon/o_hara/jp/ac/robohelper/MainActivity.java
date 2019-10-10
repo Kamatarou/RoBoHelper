@@ -177,7 +177,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     /**
      * インターバルタイマー定数
      */
-    final private long INTERVAL_TIMER = 1000 * 10;
+    final private long INTERVAL_TIMER = 1000 * 60 * 20;
     /**
      * ANDROID_IDの格納を行う
      */
@@ -291,7 +291,6 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //basicWrite("こんにちは！");
                 //sendMyAPI("こんにちは");
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
-                isBoard = true;
                 sendBroadcast(getIntentForFaceDetection("FALSE"));
             }
         });
