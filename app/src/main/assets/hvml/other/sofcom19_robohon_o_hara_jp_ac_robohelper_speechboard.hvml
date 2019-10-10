@@ -56,6 +56,14 @@
         <speech>${sofcom19_robohon.o_hara.jp.ac.robohelper:my_speech_talk_result}</speech>
         <behavior id="assign" type="normal"/>
       </action>
+      <next href="#t7" type="default" />
+    </topic>
+    <topic id="t7" listen="false">
+    <action index="1">
+      <control function="func_board_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper">
+        <data key="value_board" value="${sofcom19_robohon.o_hara.jp.ac.robohelper:my_board_person}"/>
+      </control>
+    </action>
     </topic>
   </body>
 </hvml>

@@ -43,8 +43,8 @@
         <service
             android:name=".common.RegisterScenarioService"
             android:enabled="true"
-            android:exported="false"></service>
-
+            android:exported="false">
+        </service>
         <receiver android:name=".common.RequestScenarioReceiver">
             <intent-filter>
                 <action android:name="jp.co.sharp.android.voiceui.REQUEST_SCENARIO" />

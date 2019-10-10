@@ -47,6 +47,14 @@ public class ScenarioDefinitions {
      */
     public static final String FUNC_SPEECH_AFTER = "func_speech_after";
     /**
+     * function : 掲示板の中身を喋り、喋った後の処理
+     */
+    public static final String FUNC_BOARD_AFTER ="func_board_after";
+    /**
+     * function : 掲示板の中身を喋り、喋った後の処理
+     */
+    public static final String FUNC_USUALLY_AFTER ="func_usually_after";
+    /**
      * Package名.
      */
     protected static final String PACKAGE = "sofcom19_robohon.o_hara.jp.ac.robohelper";
@@ -90,6 +98,10 @@ public class ScenarioDefinitions {
      * resolve variable：アプリで変数解決する値.
      */
     public static final String RESOLVE_SPEECHTALK_RESULT = ScenarioDefinitions.PACKAGE + ":my_speech_talk_result";
+    /*
+    * resolve variable : 伝言板の対象の値
+    */
+    public static final String RESOLVE_BOARD_PERSON = ScenarioDefinitions.PACKAGE + ":my_board_person";
     /**
      * static クラスとして使用する.
      */

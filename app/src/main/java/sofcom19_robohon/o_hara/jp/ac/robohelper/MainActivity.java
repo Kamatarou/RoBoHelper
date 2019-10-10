@@ -6,16 +6,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.Toolbar;
-import android.telephony.TelephonyManager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,14 +26,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.HashMap;
-import java.util.UUID;
+import java.util.Timer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import jp.co.sharp.android.rb.addressbook.AddressBookCommonUtils;
+import jp.co.sharp.android.rb.addressbook.AddressBookManager;
+import jp.co.sharp.android.rb.addressbook.AddressBookVariable.AddressBookData;
+import jp.co.sharp.android.rb.addressbook.AddressBookVariable.OwnerProfileData;
 import sofcom19_robohon.o_hara.jp.ac.robohelper.customize.ScenarioDefinitions;
 import sofcom19_robohon.o_hara.jp.ac.robohelper.util.VoiceUIManagerUtil;
 import sofcom19_robohon.o_hara.jp.ac.robohelper.util.VoiceUIVariableUtil;
@@ -150,9 +154,21 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      */
     private boolean stat;
     /**
+     * 伝言板の内容を保存するHashMap
+     */
+    private HashMap<String, Object> MsgMap;
+    /**
      * 伝言板の発話の管理をする
      */
     private boolean isBoard;
+    /*
+    * 伝言板の対象人物名を格納する
+    */
+    private String mBoardPerson = "";
+    /**
+     * 普段の呼びかけの管理をする
+     */
+    private boolean isUsually;
     /**
      * ANDROID_IDの格納を行う
      */
@@ -233,8 +249,12 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             edit.putInt(dataIntPreTag,dataInt).apply();
         }*/
 
+        //伝言板用のHashMapの初期化
+        MsgMap = new HashMap<>();
         //伝言板の初期値代入
         isBoard = false;
+        //普段の会話の初期値代入
+        isUsually = false;
 
         //発話ボタンの実装.
         Button Button = (Button) findViewById(R.id.accost);
@@ -255,6 +275,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //basicWrite("こんにちは！");
                 //sendMyAPI("こんにちは");
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
+                isBoard = true;
+                sendBroadcast(getIntentForFaceDetection("FALSE"));
             }
         });
 
@@ -342,31 +364,32 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         mDatabase.child("msgboard").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String , Object> Array_Index = new HashMap<>();
                 int Index = 0;
                 Long length;
-                Array_Index.clear();
+                MsgMap.clear();
 
                 length = dataSnapshot.getChildrenCount() - 1;
                 Log.d(TAG, "onData length: " + length);
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    Array_Index.put(String.valueOf(Index), ds.getValue());
+                    MsgMap.put(String.valueOf(Index), ds.getValue());
                     Index++;
                     for(DataSnapshot dss : ds.getChildren()){
                         //Log.d(TAG, "onDataChange: msgPair-> " + dss.getKey());
                         //Log.d(TAG, "onDataChange: msgBoard-> " + dss.getValue());
-                        Array_Index.put(dss.getKey(),dss.getValue());
+                        MsgMap.put(dss.getKey(),dss.getValue());
                     }
                 }
 
                 //未発話の場合、喋る。ただし、初回起動時は喋らないように設定
-                if(Array_Index.get("isListen").equals("false")  && isBoard){
-                        speakMessageBoard(Array_Index);
+                Log.d(TAG, "speak -> "+MsgMap.get("isListen").toString().equals("false")+" : "+isBoard);
+                if(MsgMap.get("isListen").toString().equals("false")  && isBoard){
+                    speakMessageBoard();
+                    isUsually = false;
                 }
                 else {
                     //初回起動の処理、起動以降の伝言板の取得を行う
                     Log.d(TAG, "onDataChange: Rejected SpeechBoard");
-                    isBoard = true;
+                    //isBoard = false;
                 }
 
             }
@@ -377,33 +400,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             }
         });
 
-        mDatabase.child("chat").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        if(isUsually){
+            //TODO:普段の呼びかけ周りの処理をする
+            speakUsually();
+        }
     }
 
     @Override
@@ -464,7 +464,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //this.unregisterReceiver(mProjectorEventReceiver);
 
         //TODO カメラ連携起動結果取得用レシーバー破棄(カメラ利用時のみ).
-        //this.unregisterReceiver(mCameraResultReceiver);
+        this.unregisterReceiver(mCameraResultReceiver);
 
         //TODO ダンス結果用レシーバーの破棄(ダンス利用時のみ).
         //this.unregisterReceiver(mDanceResultReceiver);
@@ -507,8 +507,12 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     if (ScenarioDefinitions.RESOLVE_SPEECHTALK_RESULT.equals(key)) {
                         variable.setStringValue(mSpeechTxt);
                     }
+                    if(ScenarioDefinitions.RESOLVE_BOARD_PERSON.equals(key)){
+                        variable.setStringValue(mBoardPerson);
+                    }
                     //発話後はリセットする
                     mSpeechTxt = "";
+
                 }
                 break;
             case ScenarioDefinitions.FUNC_SPEECH_AFTER:
@@ -516,6 +520,17 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 if(!stat){
                     mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
                 }
+                break;
+            case ScenarioDefinitions.FUNC_BOARD_AFTER:
+                isBoard = false;
+                mBoardPerson = "";
+                final String person = VoiceUIVariableUtil.getVariableData(variables, "value_board");
+                Log.d(TAG, "onExecCommand FaceName: " + person);
+                mDatabase.child("msgboard").child(person).child("isListen").setValue(true);
+
+                break;
+            case ScenarioDefinitions.FUNC_USUALLY_AFTER:
+                isUsually = false;
                 break;
             case ScenarioDefinitions.FUNC_LISTEN:
                 String key = "listen_kata";
@@ -801,7 +816,41 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             Log.d(TAG, "CameraResultReceiver#onReceive() : " + action);
             switch (action) {
                 case ACTION_RESULT_FACE_DETECTION:
+                    boolean ExistFlg = false;
                     int result = intent.getIntExtra(FaceDetectionUtil.EXTRA_RESULT_CODE, FaceDetectionUtil.RESULT_CANCELED);
+                    if(result == FaceDetectionUtil.RESULT_OK){
+                        HashMap<String,String> hashMapFace =
+                                (HashMap<String,String>)intent.getSerializableExtra(FaceDetectionUtil.EXTRA_MAP_FACE_DETECTION);
+
+                        //電話帳よりContact IDを参照する
+                        AddressBookManager addressMng = AddressBookManager.getService(getApplicationContext());
+                        List<String> nameList = new ArrayList<String>();
+
+                        for (String key : hashMapFace.keySet()) {
+                            int contactId = Integer.valueOf(hashMapFace.get(key));
+                            Log.d(TAG, "contact id = " + contactId);
+                            if(contactId == AddressBookCommonUtils.CONTACT_ID_OWNER){
+                                //オーナーを検出した場合
+                                nameList.add(getOwnerName(addressMng));
+                                ExistFlg = true;
+                            }else if(contactId == -1){
+                                //電話帳登録されていない人を検出した場合
+                            }else {
+                                //電話帳登録されている人を検出した場合
+                                nameList.add(getNameByContactId(addressMng, contactId));
+                                ExistFlg = true;
+                            }
+                        }
+
+                        //発話用のテキスト作成
+                        if(ExistFlg) {
+                            Log.d(TAG, "onReceive: ditect face");
+                            isBoard = true;
+                            isUsually = true;
+                        }else{
+                            Log.d(TAG, "onReceive: No Ditect Face");
+                        }
+                    }
                     break;
                 case ACTION_RESULT_TAKE_PICTURE:
                     result = intent.getIntExtra(ShootMediaUtil.EXTRA_RESULT_CODE, ShootMediaUtil.RESULT_CANCELED);
@@ -813,6 +862,62 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     break;
             }
         }
+    }
+
+    /**
+     * オーナー名取得関数
+     * @param addressMng AddressBookManager
+     * @return オーナーの呼び方
+     */
+    private String getOwnerName(AddressBookManager addressMng) {
+        String ret = "";
+        try {
+            OwnerProfileData ownerdata = addressMng.getOwnerProfileData();
+            String nickName = ownerdata.getNickname();
+            String firstName = ownerdata.getFirstname();
+            String lastName = ownerdata.getLastname();
+
+            //オーナーの呼び方の優先順位「ニックネーム」→「名(ファーストネーム)＋さん」→「姓(ラストネーム)＋さん」
+            if(nickName != null && !("".equals(nickName)) ) {
+                ret = nickName;
+            }else if(firstName != null && !("".equals(firstName)) ) {
+                firstName = firstName + "さん";
+                ret = firstName;
+            }else if(lastName != null && !("".equals(lastName)) ) {
+                lastName = lastName + "さん";
+                ret = lastName;
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "RemoteException occur : " + e.getMessage());
+        }
+        return ret;
+    }
+
+    /**
+     * 電話帳登録されている人の名前取得関数
+     * @param addressMng AddressBookManager
+     * @param id Contact ID
+     * @return 友達の呼び方
+     */
+    private String getNameByContactId(AddressBookManager addressMng, int id) {
+        String ret = "";
+        try {
+            AddressBookData address = addressMng.getAddressBookData(id);
+            String nickName = address.getNickname();
+            String firstName = address.getFirstname();
+            String lastName = address.getLastname();
+            //オーナー以外の呼び方の優先順位「ニックネーム」→「姓(ラストネーム)＋さん」→「名(ファーストネーム)＋さん」
+            if (nickName != null && !("".equals(nickName))) {
+                ret = nickName;
+            } else if (lastName != null && !("".equals(lastName))) {
+                ret = lastName + "さん";
+            } else if (firstName != null && !("".equals(firstName))) {
+                ret = firstName + "さん";
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "RemoteException occur : " + e.getMessage());
+        }
+        return ret;
     }
 
     /**
@@ -945,19 +1050,33 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     /**
      * メッセージボードの処理
      */
-    private void speakMessageBoard(HashMap<String, Object> MsgMap){
+    private void speakMessageBoard(){
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("message"));
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("name"));
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("time"));
         if(MsgMap.get("time").equals("morning")){
-            Log.d(TAG, "speakMessageBoard: isMornig");
+            Log.d(TAG, "speakMessageBoard: isMorning");
+        }
+        else if(MsgMap.get("time").equals("noon")){
+            Log.d(TAG, "speakMessageBoard: isNoon");
+        }
+        else if(MsgMap.get("time").equals("night")){
+            Log.d(TAG, "speakMessageBoard: isNight");
         }
 
         mSpeechTxt = MsgMap.get("message").toString();
+        mBoardPerson = MsgMap.get("name").toString();
         if(mVoiceUIManager != null && !mSpeechTxt.equals("") ) {
             Log.d(TAG, "speakMessageBoard: StartSpeach->" + mSpeechTxt);
             VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_BOARD);
             VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
         }
+    }
+
+    /**
+     * 普段の会話周りの処理
+     */
+    private void speakUsually(){
+        Log.d(TAG, "speakUsually: ");
     }
 }
