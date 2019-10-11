@@ -292,8 +292,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //basicWrite("こんにちは！");
                 //sendMyAPI("こんにちは");
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
-                speakUsually();
-                //sendBroadcast(getIntentForFaceDetection("TRUE"));
+                //speakUsually();
+                sendBroadcast(getIntentForFaceDetection("TRUE"));
             }
         });
 
@@ -417,9 +417,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             }
         });
 
-        if(isUsually) {
-            speakUsually();
-        }
+
     }
 
     @Override
@@ -442,6 +440,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE_COMMON);
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE01);
 
+
+        if(isUsually) {
+            speakUsually();
+        }
     }
 
     @Override
