@@ -292,7 +292,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //basicWrite("こんにちは！");
                 //sendMyAPI("こんにちは");
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
-                sendBroadcast(getIntentForFaceDetection("FALSE"));
+                speakUsually();
+                //sendBroadcast(getIntentForFaceDetection("TRUE"));
             }
         });
 
@@ -416,8 +417,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             }
         });
 
-        if(isUsually){
-            //TODO:普段の呼びかけ周りの処理をする
+        if(isUsually) {
             speakUsually();
         }
     }
@@ -549,6 +549,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
                 break;
             case ScenarioDefinitions.FUNC_USUALLY_AFTER:
+                isBoard = false;
                 isUsually = false;
                 break;
             case ScenarioDefinitions.FUNC_LISTEN:
@@ -1096,6 +1097,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         }
         else{
             isBoard = false;
+            speakUsually();
             return;
         }
 
@@ -1112,6 +1114,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      * 普段の会話周りの処理
      */
     private void speakUsually(){
-        Log.d(TAG, "speakUsually: ");
+        Log.d(TAG, "speakUsually() ");
+
+        VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_USUALLY);
+        VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
     }
 }

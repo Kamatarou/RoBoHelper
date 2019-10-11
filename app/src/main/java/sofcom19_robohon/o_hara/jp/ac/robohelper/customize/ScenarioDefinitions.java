@@ -91,6 +91,10 @@ public class ScenarioDefinitions {
      */
     public static final String ACC_BOARD =  ScenarioDefinitions.PACKAGE + ".acc_spcBoard.t1";
     /**
+     * accost名：普段の声掛け発話
+     */
+    public static final String ACC_USUALLY =  ScenarioDefinitions.PACKAGE + ".acc_usually.t1";
+    /**
      * 音声UIコールバック用定義.
      */
     public static final String COMMAND_RESOLVE_VARIABLE = "onVoiceUIResolveVariable";
