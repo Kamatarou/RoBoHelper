@@ -13,6 +13,7 @@
     <situation priority="73" topic_id="t1" trigger="user-word">あのね in ${Lvcsr:Basic}</situation>
     <situation priority="75" topic_id="t1" trigger="user-word">${Lvcsr:Basic} include [ねぇ,聞いて,あのね,ねぇねぇ,ねぇねぇロボホン]</situation>
     <situation priority="68" topic_id="t3" trigger="user-word">${Lvcsr:Basic} include [それはね,えっとね]</situation>
+    <accost topic_id="t3"  priority="68" word="sofcom19_robohon.o_hara.jp.ac.robohelper.acc_switch.t3"/>
   </head>
   <body>
     <topic id="t1" listen="false">

@@ -155,6 +155,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      */
     private boolean stat;
     /**
+     * 会話の切り返しフラグを設定
+     **/
+    private boolean isEnd_Conversation = false;
+    /**
      * 伝言板の内容を保存するHashMap
      */
     private HashMap<String, Object> MsgMap;
@@ -162,7 +166,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      * 伝言板の発話の管理をする
      */
     private boolean isBoard;
-    /*
+    /**
     * 伝言板の対象人物名を格納する
     */
     private String mBoardPerson = "";
@@ -170,7 +174,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      * 普段の呼びかけの管理をする
      */
     private boolean isUsually;
-    /*
+    /**
     * タイマークラス
     */
     private RoboTimer roboTimer;
@@ -293,7 +297,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //sendMyAPI("こんにちは");
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
                 //speakUsually();
-                sendBroadcast(getIntentForFaceDetection("TRUE"));
+                //sendBroadcast(getIntentForFaceDetection("TRUE"));
+                Log.d(TAG, "onClick: SwitchTalkFlg->" + isEnd_Conversation);
             }
         });
 
@@ -540,6 +545,11 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //発話完了後、発話フラグを折る
                 if(!stat){
                     mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
+                }
+                if(!isEnd_Conversation){
+                    Log.d(TAG, "onExecCommand: Switchtalk");
+                    VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_SWITCH);
+                    VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
                 }
                 break;
             case ScenarioDefinitions.FUNC_BOARD_AFTER:
@@ -1068,9 +1078,11 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
         //非同期処理後処理
         dfTask.setmCallBack(new AsyncDFTask.CallBackTask(){
-            public void CallBack(String result){
-                mSpeechTxt = result;
+            public void CallBack(ArrayList result){
+                mSpeechTxt = (String)result.get(0);
+                isEnd_Conversation = (boolean)result.get(1);
                 Log.d(TAG, "sendMyAPI: "+ mSpeechTxt);
+                Log.d(TAG, "sendMyAPI: isEnd->" + isEnd_Conversation);
 
                 VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_SPEECH);
                 VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);

@@ -13,8 +13,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
-public class AsyncDFTask extends AsyncTask<String, Void, String> {
+public class AsyncDFTask extends AsyncTask<String, Void, ArrayList> {
     private final String TAG = "AsyncDialogflowTask";
     //コールバック設定
     private CallBackTask mCallBack;
@@ -22,9 +23,10 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
     /**
      * 非同期処理で自作APIからDialogflowのインテントを取得
      * */
-    protected String doInBackground(String... params){
+    protected ArrayList doInBackground(String... params){
         //結果
         String RstStr = "";
+        ArrayList Result = new ArrayList();
         final int CONNECT_TIMEOUT = 30 * 1000;
         final int READ_TIMEOUT = 30 * 1000;
         URL Url;
@@ -72,9 +74,13 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
                     Log.d(TAG, "doInBackground: " + data);
                     JSONObject json = new JSONObject(data);
                     String str = json.get("Response").toString();
+                    Boolean end_conversation = json.getBoolean("end_conversation");
                     Log.d(TAG, "doInBackground: getword->" + str);
+                    Log.d(TAG, "doInBackground: end_conversation->" + end_conversation);
 
-                    RstStr = str;
+                    //RstStr = str;
+                    Result.add(str);
+                    Result.add(end_conversation);
                     bufferedReader.close();
                     inputStream.close();
                     bufferedReader.close();
@@ -93,7 +99,7 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
             e.printStackTrace();
         }
 
-        return RstStr;
+        return Result;
     }
 
 
@@ -102,7 +108,7 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
      * @param result 取得したインテント
      * */
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(ArrayList result) {
         super.onPostExecute(result);
         Log.d(TAG, "onPostExecute: " + result);
         mCallBack.CallBack(result);
@@ -115,6 +121,6 @@ public class AsyncDFTask extends AsyncTask<String, Void, String> {
 
     //コールバック用のインターフェイス定義
     interface CallBackTask{
-        void CallBack(String result);
+        void CallBack(ArrayList result);
     }
 }

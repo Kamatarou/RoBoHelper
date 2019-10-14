@@ -95,6 +95,10 @@ public class ScenarioDefinitions {
      */
     public static final String ACC_USUALLY =  ScenarioDefinitions.PACKAGE + ".acc_usually.t1";
     /**
+     * accost名：切り返し会話用
+     */
+    public static final String ACC_SWITCH =  ScenarioDefinitions.PACKAGE + ".acc_switch.t3";
+    /**
      * 音声UIコールバック用定義.
      */
     public static final String COMMAND_RESOLVE_VARIABLE = "onVoiceUIResolveVariable";
