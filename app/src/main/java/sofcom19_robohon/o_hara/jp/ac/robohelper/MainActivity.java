@@ -546,7 +546,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 if(!stat){
                     mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
                 }
-                if(!isEnd_Conversation){
+                if(!isEnd_Conversation && stat){
                     Log.d(TAG, "onExecCommand: Switchtalk");
                     VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_SWITCH);
                     VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
