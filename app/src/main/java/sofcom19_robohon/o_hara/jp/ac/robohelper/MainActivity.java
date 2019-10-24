@@ -175,6 +175,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      */
     private boolean isUsually;
     /**
+     * 認識した顔の人物名を格納
+     */
+    private String mFaceName;
+    /**
     * タイマークラス
     */
     private RoboTimer roboTimer;
@@ -298,7 +302,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
                 //speakUsually();
                 //sendBroadcast(getIntentForFaceDetection("TRUE"));
-                Log.d(TAG, "onClick: SwitchTalkFlg->" + isEnd_Conversation);
+                //Log.d(TAG, "onClick: SwitchTalkFlg->" + isEnd_Conversation);
+                //sendMyAPI("てすととうるふ","Toto Wolf");
             }
         });
 
@@ -556,8 +561,15 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 isBoard = false;
                 mBoardPerson = "";
                 final String person = VoiceUIVariableUtil.getVariableData(variables, "value_board");
+                final String return_sentence = VoiceUIVariableUtil.getVariableData(variables, "value_return_board");
                 Log.d(TAG, "onExecCommand FaceName: " + person);
-                mDatabase.child("msgboard").child(person).child("isListen").setValue(true);
+                if(return_sentence.isEmpty()) {
+                    mDatabase.child("msgboard").child(person).child("isListen").setValue(true);
+                }
+                else{
+                    Log.d(TAG, "onExecCommand BoardReturn: " + return_sentence);
+                    mDatabase.child("msgboard").child(person).child("return_msg").setValue(return_sentence);
+                }
 
                 break;
             case ScenarioDefinitions.FUNC_USUALLY_AFTER:
@@ -570,7 +582,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 final String kana = VoiceUIVariableUtil.getVariableData(variables, key);
                 Log.d(TAG, "onExec Kana: "+ kana);
                     if(stat){
-                        sendMyAPI(word);
+                        sendMyAPI(word,mFaceName);
                     }
                     else {
                         basicWrite(word);
@@ -885,9 +897,19 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
                         //発話用のテキスト作成
                         if(ExistFlg) {
-                            Log.d(TAG, "onReceive: ditect face");
                             isBoard = true;
                             isUsually = true;
+                            if (nameList.isEmpty()) {
+                                Log.d(TAG, "onReceive: ditect face-> No name");
+                                mFaceName = "";
+                            }else {
+                                for (String name : nameList) {
+                                    mFaceName += name;
+                                    mFaceName += ",";
+                                }
+                                Log.d(TAG, "onReceive: ditect face -> " + mFaceName);
+
+                            }
                         }else{
                             Log.d(TAG, "onReceive: No Ditect Face");
                         }
@@ -1071,10 +1093,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     /**
     *  受け取った発話文字をDialogflowへ飛ばす
     */
-    private void sendMyAPI(String word){
+    private void sendMyAPI(String word,String F_name){
         Log.d(TAG, "sendMyAPI: word :" + word);
         AsyncDFTask dfTask = new AsyncDFTask();
-        dfTask.execute(word);
+        dfTask.execute(word,F_name);
 
         //非同期処理後処理
         dfTask.setmCallBack(new AsyncDFTask.CallBackTask(){
