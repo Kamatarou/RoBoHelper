@@ -37,6 +37,9 @@ public class MainActivityVoiceUIListener implements VoiceUIListener {
         //controlタグからの通知(シナリオ側にcontrolタグのあるActionが開始されると呼び出される).
         //発話と同時にアプリ側で処理を実行したい場合はこちらを使う.
         Log.v(TAG, "onVoiceUIEvent");
+        if(VoiceUIVariableUtil.isTarget(variables, ScenarioDefinitions.TARGET)){
+
+        }
     }
 
     @Override

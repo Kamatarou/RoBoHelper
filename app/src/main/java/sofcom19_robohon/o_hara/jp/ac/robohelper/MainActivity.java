@@ -177,7 +177,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     /**
      * 認識した顔の人物名を格納
      */
-    private String mFaceName;
+    private String mFaceName = "";
     /**
     * タイマークラス
     */
@@ -301,7 +301,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //sendMyAPI("こんにちは");
                 //Toast.makeText(getApplicationContext(),"UUID:" + UUID, Toast.LENGTH_LONG).show();
                 //speakUsually();
-                //sendBroadcast(getIntentForFaceDetection("TRUE"));
+                sendBroadcast(getIntentForFaceDetection("TRUE"));
+                //speakMessageBoard();
                 //Log.d(TAG, "onClick: SwitchTalkFlg->" + isEnd_Conversation);
                 //sendMyAPI("てすととうるふ","Toto Wolf");
             }
@@ -358,7 +359,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 //発話する文字を代入
                 mSpeechTxt = FastVal;
                 Log.d(TAG, "onData mSpeechTxt: " + mSpeechTxt);
-                basicSpeech();
+                if(!mSpeechTxt.equals("")) {
+                    basicSpeech();
+                }
 
                 //Log.d(TAG, "post is :"+ FastVal);
             }
@@ -413,10 +416,14 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     speakMessageBoard();
                     isUsually = false;
                 }
+                else if(isUsually){
+                    speakUsually();
+                }
                 else {
                     //初回起動の処理、起動以降の伝言板の取得を行う
                     Log.d(TAG, "onDataChange: Rejected SpeechBoard");
                     //isBoard = false;
+
                 }
 
             }
@@ -426,7 +433,6 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 Log.w("TAG", "Failed to read value :"+ databaseError.toException());
             }
         });
-
 
     }
 
@@ -451,9 +457,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE01);
 
 
-        if(isUsually) {
-            speakUsually();
-        }
+
     }
 
     @Override
@@ -536,13 +540,36 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     String key = variable.getName();
                     Log.d(TAG, "onVoiceUIResolveVariable: " + key + ":" + variable.getStringValue());
                     if (ScenarioDefinitions.RESOLVE_SPEECHTALK_RESULT.equals(key)) {
+                        Log.d(TAG, "onExecCommand: mspeechtxt:" + mSpeechTxt);
                         variable.setStringValue(mSpeechTxt);
+                        //発話後はリセットする
+                        mSpeechTxt = "";
                     }
                     if(ScenarioDefinitions.RESOLVE_BOARD_PERSON.equals(key)){
                         variable.setStringValue(mBoardPerson);
                     }
-                    //発話後はリセットする
-                    mSpeechTxt = "";
+                    if(ScenarioDefinitions.RESOLVE_BOARD_PERSON.equals(key)){
+                        Calendar calendar = Calendar.getInstance();
+                        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                        Log.d(TAG, "speakMessageBoard: time" + hour);
+                        if(mFaceName.isEmpty()){
+                            if(MsgMap.get("time").equals("morning") && (hour >= 4 && hour <= 11)){
+                                Log.d(TAG, "speakMessageBoard: isMorning");
+                                mFaceName = "おはよ！";
+                            }
+                            else if(MsgMap.get("time").equals("noon") && (hour >= 12 && hour <= 16)){
+                                Log.d(TAG, "speakMessageBoard: isNoon");
+                                mFaceName = "こんにちは！";
+                            }
+                            else if(MsgMap.get("time").equals("night") && (hour >= 17 && hour <= 23)){
+                                Log.d(TAG, "speakMessageBoard: isNight");
+                                mFaceName = "こんばんは!";
+                            }
+                        }
+                        variable.setStringValue(mFaceName);
+                        mFaceName = "";
+                    }
+
 
                 }
                 break;
@@ -563,13 +590,14 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 final String person = VoiceUIVariableUtil.getVariableData(variables, "value_board");
                 final String return_sentence = VoiceUIVariableUtil.getVariableData(variables, "value_return_board");
                 Log.d(TAG, "onExecCommand FaceName: " + person);
-                if(return_sentence.isEmpty()) {
+                mDatabase.child("msgboard").child(person).child("isListen").setValue(true);
+                /*if(return_sentence.isEmpty()) {
                     mDatabase.child("msgboard").child(person).child("isListen").setValue(true);
                 }
                 else{
                     Log.d(TAG, "onExecCommand BoardReturn: " + return_sentence);
                     mDatabase.child("msgboard").child(person).child("return_msg").setValue(return_sentence);
-                }
+                }*/
 
                 break;
             case ScenarioDefinitions.FUNC_USUALLY_AFTER:
@@ -905,12 +933,13 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                             }else {
                                 for (String name : nameList) {
                                     mFaceName += name;
-                                    mFaceName += ",";
+                                    mFaceName += "さん,";
                                 }
                                 Log.d(TAG, "onReceive: ditect face -> " + mFaceName);
 
                             }
                         }else{
+                            isUsually = false;
                             Log.d(TAG, "onReceive: No Ditect Face");
                         }
                     }
@@ -1121,7 +1150,8 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         Log.d(TAG, "speakMessageBoard: " + MsgMap.get("time"));
 
         Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        Log.d(TAG, "speakMessageBoard: time" + hour);
         if(MsgMap.get("time").equals("morning") && (hour >= 4 && hour <= 11)){
             Log.d(TAG, "speakMessageBoard: isMorning");
         }

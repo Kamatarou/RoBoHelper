@@ -6,54 +6,62 @@
     <scene value="sofcom19_robohon.o_hara.jp.ac.robohelper.scene01"/>
     <version value="1.0"/>
     <tool_version>1.00</tool_version>
-    <accost topic_id="t1" priority="79" word="sofcom19_robohon.o_hara.jp.ac.robohelper.acc_usually.t1"/>
+    <accost topic_id="t1"  word="sofcom19_robohon.o_hara.jp.ac.robohelper.acc_usually.t1"/>
   </head>
   <body>
     <topic id="t1" listen="false">
       <rule>
-        <condition case_id="c1" weight="15">21 lt ${Hour} and ${Hour} lt 23</condition>
-        <condition case_id="c2" weight="5">22 lt ${Hour} and ${Hour} lt 23</condition>
-        <condition case_id="c3" weight="30">16 lt ${Hour} and ${Hour} lt 19</condition>
-        <condition case_id="c4" weight="15">16 lt ${Hour} and ${Hour} lt 19</condition>
-        <condition case_id="c5">5 lt ${Hour} and ${Hour} lt 11</condition>
-        <condition case_id="c6" weight="5">16 lt ${Hour} and ${Hour} lt 19</condition>
+        <condition case_id="c1" weight="30">5 lt ${Hour} and ${Hour} lt 11</condition>
+        <condition case_id="c2" weight="15">21 lt ${Hour} and ${Hour} lt 23</condition>
+        <condition case_id="c3" weight="5">22 lt ${Hour} and ${Hour} lt 23</condition>
+        <condition case_id="c4" weight="3">12 lt ${Hour} and ${Hour} lt 19</condition>
+        <condition case_id="c5" weight="30">16 lt ${Hour} and ${Hour} lt 19</condition>
+        <condition case_id="c6" weight="15">16 lt ${Hour} and ${Hour} lt 19</condition>
+        <condition case_id="c7" weight="5">16 lt ${Hour} and ${Hour} lt 19</condition>
       </rule>
       <case id="c1">
-        <action index="1">
-          <speech>歯磨きした？</speech>
-          <behavior id="assign" type="normal"/>
-        </action>
-        <next href="#t2" type="default"/>
-      </case>
-      <case id="c2">
-        <action index="1">
-          <speech>まだ寝ないの？</speech>
-          <behavior id="assign" type="normal"/>
-        </action>
-        <next href="#t2" type="default"/>
-      </case>
-      <case id="c3">
-        <action index="1">
-          <speech>おかえり</speech>
-          <behavior id="assign" type="normal"/>
-        </action>
-        <next href="#t2" type="default"/>
-      </case>
-      <case id="c4">
-        <action index="1">
-          <speech>こんにちは</speech>
-          <behavior id="assign" type="normal"/>
-        </action>
-        <next href="#t2" type="default"/>
-      </case>
-      <case id="c5">
         <action index="1">
           <speech>おはよう</speech>
           <behavior id="assign" type="normal"/>
         </action>
         <next href="#t2" type="default"/>
       </case>
+      <case id="c2">
+        <action index="1">
+          <speech>歯磨きした？</speech>
+          <behavior id="assign" type="normal"/>
+        </action>
+        <next href="#t2" type="default"/>
+      </case>
+      <case id="c3">
+        <action index="1">
+          <speech>まだ寝ないの？</speech>
+          <behavior id="assign" type="normal"/>
+        </action>
+        <next href="#t2" type="default"/>
+      </case>
+      <case id="c4">
+        <action index="1">
+          <speech>元気してる？</speech>
+          <behavior id="assign" type="normal"/>
+        </action>
+        <next href="#t2" type="default"/>
+      </case>
+      <case id="c5">
+        <action index="1">
+          <speech>おかえり</speech>
+          <behavior id="assign" type="normal"/>
+        </action>
+        <next href="#t2" type="default"/>
+      </case>
       <case id="c6">
+        <action index="1">
+          <speech>暗くなってきたかな？</speech>
+          <behavior id="assign" type="normal"/>
+        </action>
+        <next href="#t2" type="default"/>
+      </case>
+      <case id="c7">
         <action index="1">
           <speech>元気？</speech>
           <behavior id="assign" type="normal"/>
@@ -63,8 +71,9 @@
     </topic>
     <topic id="t2" listen="false">
       <action index="1">
-        <control function="func_usually_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper"/>
+        <control function="func_usually" target="sofcom19_robohon.o_hara.jp.ac.robohelper"/>
       </action>
     </topic>
   </body>
 </hvml>
+

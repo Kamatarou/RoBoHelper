@@ -36,7 +36,8 @@ public class AsyncDFTask extends AsyncTask<String, Void, ArrayList> {
             String burl = "https://us-central1-chat001-16c14.cloudfunctions.net/app";
             String add1 = "/api/v1/hubapi";
             String add2 = "?s=" + params[0];
-
+            String add3 = params[1];
+            Log.d(TAG, "doInBackground: " + add3);
 
 
             //コネクションの確立

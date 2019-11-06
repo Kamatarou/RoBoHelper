@@ -24,12 +24,11 @@
         <situation trigger="user-word">${Local_Reply:GLOBAL_REPLY_YES} neq null</situation>
       </a>
       <a href="#t5">
-        <situation trigger="user-word">ききたい in ${Lvcsr:Basic}</situation>
+        <situation trigger="user-word">キキタイ in ${Lvcsr:Kana}</situation>
       </a>
       <a href="#t3">
         <situation trigger="user-word">聞きたくない in ${Lvcsr:Basic}</situation>
       </a>
-      <a href="#t4" type="default"/>
       <next href="#t4" type="default"/>
     </topic>
     <topic id="t3" listen="false">
@@ -58,67 +57,7 @@
         <behavior id="assign" type="normal"/>
         <control function="func_board_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper">
           <data key="value_board" value="${sofcom19_robohon.o_hara.jp.ac.robohelper:my_board_person}"/>
-          <data key="value_return_board" value=""/>
         </control>
-      </action>
-      <next href="#t7" type="default"/>
-    </topic>
-    <topic id="t7" listen="false">
-      <action index="1">
-        <speech>君も言っておきたいことある？</speech>
-        <behavior id="assign" type="normal"/>
-      </action>
-      <next href="#t8" type="default"/>
-    </topic>
-    <topic dict="Reply" id="t8" listen="true">
-      <a href="#t9">
-        <situation trigger="user-word">${Local_Reply:GLOBAL_REPLY_YES} neq null</situation>
-      </a>
-      <a href="#t14">
-        <situation trigger="user-word">${Local_Reply:GLOBAL_REPLY_NO} neq null</situation>
-      </a>
-      <a href="#t14" type="default"/>
-    </topic>
-    <topic id="t9" listen="false">
-      <action index="1">
-        <speech>${resolver:speech_ok(${resolver:ok_id})}</speech>
-        <behavior id="assign" type="normal"/>
-      </action>
-      <next href="#t10" type="default"/>
-    </topic>
-    <topic id="t10" listen="false">
-      <action index="1">
-        <speech>それじゃあ今から言ってね</speech>
-        <behavior id="assign" type="normal"/>
-      </action>
-      <next href="#t11" type="default"/>
-    </topic>
-    <topic id="t11" listen="true">
-      <a href="#t13">
-        <situation trigger="user-word">ＶＯＩＣＥＰＦ＿ＥＲＲ in ${Lvcsr:Basic}</situation>
-      </a>
-      <a href="#t12" type="default"/>
-      <next href="#t13" type="default"/>
-    </topic>
-    <topic id="t12" listen="false">
-      <action index="1">
-        <speech>今、言ったことを伝えておくね</speech>
-        <behavior id="assign" type="normal"/>
-        <control function="func_board_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper">
-          <data key="value_return_board" value="${Lvcsr:Basic}"/>
-        </control>
-      </action>
-    </topic>
-    <topic id="t13" listen="false">
-      <action index="1">
-        <speech>うまく聞き取れなかったよ</speech>
-        <behavior id="assign" type="normal"/>
-      </action>
-    </topic>
-    <topic id="t14" listen="false">
-      <action index="1">
-        <speech>わかったよ</speech>
-        <behavior id="assign" type="normal"/>
       </action>
     </topic>
   </body>
