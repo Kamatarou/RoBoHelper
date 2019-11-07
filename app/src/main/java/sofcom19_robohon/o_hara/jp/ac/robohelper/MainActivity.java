@@ -340,7 +340,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                         JSONObject jsonObject1 = jsonObject.getJSONObject(L.toString());
                         Log.d(TAG, "onDataChange: "+ jsonObject1);
                         Fkey = jsonObject1.getString("firebasekey");
-                        if (!(jsonObject1.getString("device").equals("Android")) ) {
+                        if (!(jsonObject1.getString("device").equals("えーた")) ) {
                             Log.d(TAG, "onData isspeech->: " + jsonObject1.getString("isSpeech").equals("true"));
                             if(jsonObject1.getString("isSpeech").equals("true")) {
                                 //デバイスがAndroid以外から発信したもので発話フラグが消えてないものを発話する
@@ -1086,7 +1086,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
         String key = mDatabase.push().getKey();
         Log.i(TAG, "basicWrite: " + mDatabase.push());
-        MessageData messageData = new MessageData(key,"Android",str);
+        MessageData messageData = new MessageData(key,"えーた",str);
 
         Task task = mDatabase.child("chat").child(key).setValue(messageData);
 
