@@ -548,24 +548,24 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     if(ScenarioDefinitions.RESOLVE_BOARD_PERSON.equals(key)){
                         variable.setStringValue(mBoardPerson);
                     }
-                    if(ScenarioDefinitions.RESOLVE_BOARD_PERSON.equals(key)){
+                    if(ScenarioDefinitions.RESOLVE_FACE_DITECT.equals(key)){
                         Calendar calendar = Calendar.getInstance();
                         int hour = calendar.get(Calendar.HOUR_OF_DAY);
                         Log.d(TAG, "speakMessageBoard: time" + hour);
-                        if(mFaceName.isEmpty()){
-                            if(MsgMap.get("time").equals("morning") && (hour >= 4 && hour <= 11)){
+                        //if(mFaceName.isEmpty()){
+                            if(hour >= 4 && hour <= 11){
                                 Log.d(TAG, "speakMessageBoard: isMorning");
                                 mFaceName = "おはよ！";
                             }
-                            else if(MsgMap.get("time").equals("noon") && (hour >= 12 && hour <= 16)){
+                            else if(hour >= 12 && hour <= 16){
                                 Log.d(TAG, "speakMessageBoard: isNoon");
                                 mFaceName = "こんにちは！";
                             }
-                            else if(MsgMap.get("time").equals("night") && (hour >= 17 && hour <= 23)){
+                            else if(hour >= 17 && hour <= 23){
                                 Log.d(TAG, "speakMessageBoard: isNight");
                                 mFaceName = "こんばんは!";
                             }
-                        }
+                        //}
                         variable.setStringValue(mFaceName);
                         mFaceName = "";
                     }
@@ -933,10 +933,9 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                             }else {
                                 for (String name : nameList) {
                                     mFaceName += name;
-                                    mFaceName += "さん,";
+                                    mFaceName += "、";
                                 }
                                 Log.d(TAG, "onReceive: ditect face -> " + mFaceName);
-
                             }
                         }else{
                             isUsually = false;

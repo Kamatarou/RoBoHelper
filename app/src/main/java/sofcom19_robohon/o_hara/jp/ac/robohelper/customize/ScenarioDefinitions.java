@@ -110,6 +110,10 @@ public class ScenarioDefinitions {
     * resolve variable : 伝言板の対象の値
     */
     public static final String RESOLVE_BOARD_PERSON = ScenarioDefinitions.PACKAGE + ":my_board_person";
+    /*
+     * resolve variable : 認識対象の名前
+     */
+    public static final String RESOLVE_FACE_DITECT = ScenarioDefinitions.PACKAGE + ":my_face_ditect";
     /**
      * static クラスとして使用する.
      */

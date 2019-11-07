@@ -11,6 +11,10 @@
   <body>
     <topic id="t1" listen="false">
       <action index="1">
+          <speech>${sofcom19_robohon.o_hara.jp.ac.robohelper:my_face_ditect}、</speech>
+          <behavior id="assign" type="normal" />
+      </action>
+      <action index="2">
         <speech>伝言メッセージがあるけど、聞きたい？</speech>
         <behavior id="assign" type="normal"/>
       </action>
@@ -53,7 +57,7 @@
     </topic>
     <topic id="t6" listen="false">
       <action index="1">
-        <speech>${sofcom19_robohon.o_hara.jp.ac.robohelper:my_speech_talk_result}</speech>
+        <speech>${sofcom19_robohon.o_hara.jp.ac.robohelper:my_speech_talk_result}。</speech>
         <behavior id="assign" type="normal"/>
         <control function="func_board_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper">
           <data key="value_board" value="${sofcom19_robohon.o_hara.jp.ac.robohelper:my_board_person}"/>
