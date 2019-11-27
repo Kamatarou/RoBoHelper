@@ -1,22 +1,22 @@
 <?xml version="1.0" ?>
 <hvml version="2.0">
-  <head>
-    <producer>sofcom19_robohon.o_hara.jp.ac.robohelper</producer>
-    <description>チャットの最新を言う</description>
-    <scene value="sofcom19_robohon.o_hara.jp.ac.robohelper.scene01"/>
-    <version value="1.0"/>
-    <tool_version>1.00</tool_version>
-    <accost priority="74" topic_id="t1" word="sofcom19_robohon.o_hara.jp.ac.robohelper.acc_speech.t1"/>
-  </head>
-  <body>
-    <topic id="t1" listen="false">
-      <action index="1">
-        <speech>${sofcom19_robohon.o_hara.jp.ac.robohelper:my_speech_talk_result}</speech>
-        <behavior id="assign" type="normal"/>
-      </action>
-      <action index="2">
-        <control function="func_speech_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper" />
-      </action>
-    </topic>
-  </body>
+<head>
+  <producer>sofcom19_robohon.o_hara.jp.ac.robohelper</producer>
+  <description>チャットの最新を言う</description>
+  <scene value="sofcom19_robohon.o_hara.jp.ac.robohelper.scene01"/>
+  <version value="1.0"/>
+  <tool_version>1.00</tool_version>
+  <accost priority="74" topic_id="t1" word="sofcom19_robohon.o_hara.jp.ac.robohelper.acc_think.t1"/>
+</head>
+<body>
+  <topic id="t1" listen="false">
+    <action index="1">
+      <speech>${sofcom19_robohon.o_hara.jp.ac.robohelper:my_speech_talk_result}</speech>
+      <behavior id="assign" type="normal"/>
+    </action>
+    <action index="2">
+      <control function="func_speech_after" target="sofcom19_robohon.o_hara.jp.ac.robohelper" />
+    </action>
+  </topic>
+</body>
 </hvml>

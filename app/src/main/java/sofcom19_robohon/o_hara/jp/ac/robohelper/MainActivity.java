@@ -456,7 +456,10 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE_COMMON);
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE01);
 
+        if(!stat){
+            Log.d(TAG, "onResume: Thinking");
 
+        }
 
     }
 

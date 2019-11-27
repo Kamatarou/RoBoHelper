@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<hvml version="2.0">
+    <head>
+        <producer>sofcom19_robohon.o_hara.jp.ac.robohelper</producer>
+        <description>中継対話中の間持たせ</description>
+        <scene value="sofcom19_robohon.o_hara.jp.ac.robohelper.scene01"/>
+        <version value="1.0"/>
+        <tool_version>1.00</tool_version>
+        <accost priority="89" topic_id="t1" word="sofcom19_robohon.o_hara.jp.ac.robohelper.acc_speech.t1"/>
+    </head>
+    <body>
+        <topic id="t1" listen="false">
+            <rule>
+                <condition case_id="c1" weight="3" />
+                <condition case_id="c2" weight="2" />
+                <condition case_id="c3" weight="1" />
+            </rule>
+            <case id="c1">
+                <action index="1">
+                    <speech>うぅん</speech>
+                    <behavior id="assign" type="normal"/>
+                </action>
+            </case>
+            <case id="c2">
+                <action index="1">
+                    <speech>えーっとね…</speech>
+                    <behavior id="assign" type="normal"/>
+                </action>
+            </case>
+            <case id="c3">
+                <action index="1">
+                    <speech>んん～</speech>
+                    <behavior id="assign" type="normal"/>
+                </action>
+            </case>
+        </topic>
+    </body>
+</hvml>
