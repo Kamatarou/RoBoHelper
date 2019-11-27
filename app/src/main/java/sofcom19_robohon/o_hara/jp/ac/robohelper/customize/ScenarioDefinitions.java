@@ -99,6 +99,10 @@ public class ScenarioDefinitions {
      */
     public static final String ACC_SWITCH =  ScenarioDefinitions.PACKAGE + ".acc_switch.t3";
     /**
+     * accost名：間持たせ
+     */
+    public static final String ACC_THINK =  ScenarioDefinitions.PACKAGE + ".acc_think.t1";
+    /**
      * 音声UIコールバック用定義.
      */
     public static final String COMMAND_RESOLVE_VARIABLE = "onVoiceUIResolveVariable";

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.HashMap;
 import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -379,8 +380,15 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 try {
                     stat = dataSnapshot.getValue(boolean.class);
                     Log.d(TAG, "onData talking to: " + stat);
+
                 }catch (Exception e){
                     e.printStackTrace();
+                }
+
+                //中継対話が始まったときにディレイして間を持たす
+                if(!stat){
+                    Log.d(TAG, "onResume: Thinking");
+                    speakThinking();
                 }
             }
 
@@ -455,11 +463,6 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //Scene有効化.
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE_COMMON);
         VoiceUIManagerUtil.enableScene(mVoiceUIManager, ScenarioDefinitions.SCENE01);
-
-        if(!stat){
-            Log.d(TAG, "onResume: Thinking");
-
-        }
 
     }
 
@@ -1186,5 +1189,21 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
 
         VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_USUALLY);
         VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+    }
+
+    /**
+     *
+     */
+    private void speakThinking(){
+        try {
+            TimeUnit.SECONDS.sleep(7);
+            Log.d(TAG, "speakThinking() ");
+
+            VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
+            VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+        }
+        catch (Exception e){
+            Log.e(TAG, "speakThinking: Error log" + e);
+        }
     }
 }
