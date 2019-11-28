@@ -185,6 +185,11 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     private RoboTimer roboTimer;
     private Timer timer;
     /**
+     * タイマークラス
+     */
+    private RoboThinkingTimer roboThinkingTimer;
+    private Timer thinking_timer;
+    /**
      * インターバルタイマー定数
      */
     final private long INTERVAL_TIMER = 1000 * 60 * 20;
@@ -277,10 +282,15 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         //タイマー初期化
         timer = new Timer();
         roboTimer = new RoboTimer(this);
+
+        thinking_timer = new Timer();
+        roboThinkingTimer = new RoboThinkingTimer(this);
         //ディレイ20分後に初発火、その後20分ごとに発火
         timer.scheduleAtFixedRate(roboTimer, INTERVAL_TIMER , INTERVAL_TIMER);
+
         //デバッグ用
         //timer.scheduleAtFixedRate(roboTimer, 1000 * 10 , 1000 * 30);
+
 
         //発話ボタンの実装.
         Button Button = (Button) findViewById(R.id.accost);
@@ -380,15 +390,24 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 try {
                     stat = dataSnapshot.getValue(boolean.class);
                     Log.d(TAG, "onData talking to: " + stat);
-
-                }catch (Exception e){
+                }
+                catch (Exception e){
                     e.printStackTrace();
                 }
 
                 //中継対話が始まったときにディレイして間を持たす
                 if(!stat){
-                    Log.d(TAG, "onResume: Thinking");
-                    speakThinking();
+                    try {
+                        Log.d(TAG, "onResume: Thinking");
+                        thinking_timer.scheduleAtFixedRate(roboThinkingTimer, 1000 * 15, 1000 * 45);
+                    }
+                    catch(Exception e){
+                        Log.w(TAG, "onDataChange: Exception", e);
+                    }
+                }
+                else{
+                    //中継対話が終了したらタイマーを削除
+                    thinking_timer.cancel();
                 }
             }
 
@@ -635,6 +654,21 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
     public void FaceDitect_SwingHead(){
         Log.i(TAG, "FaceDitect_SwingHead: ");
         sendBroadcast(getIntentForFaceDetection("TRUE"));
+    }
+
+    /**
+     * 考え中（間持たせ）の発話を行う
+     */
+    public void speakThinking(){
+        try {
+            Log.d(TAG, "speakThinking() ");
+
+            VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
+            VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+        }
+        catch (Exception e){
+            Log.e(TAG, "speakThinking: Error log" + e);
+        }
     }
 
     /**
@@ -1191,19 +1225,4 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
     }
 
-    /**
-     *
-     */
-    private void speakThinking(){
-        try {
-            TimeUnit.SECONDS.sleep(7);
-            Log.d(TAG, "speakThinking() ");
-
-            VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
-            VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
-        }
-        catch (Exception e){
-            Log.e(TAG, "speakThinking: Error log" + e);
-        }
-    }
 }
