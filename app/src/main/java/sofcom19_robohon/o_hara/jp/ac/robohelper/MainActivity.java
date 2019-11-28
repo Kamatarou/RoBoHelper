@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -584,7 +585,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 if(!stat){
                     mDatabase.child("chat").child(Fkey).child("isSpeech").setValue(false);
                 }
-                if(!isEnd_Conversation && stat){
+                if((!isEnd_Conversation) && stat){
                     Log.d(TAG, "onExecCommand: Switchtalk");
                     VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_SWITCH);
                     VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
@@ -620,6 +621,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     }
                     else {
                         basicWrite(word);
+
                     }
                 break;
 
@@ -1101,6 +1103,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             @Override
             public void onSuccess(Object o) {
                 Log.i("TAG", "Success Send");
+                speakThinking();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -1195,15 +1198,22 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      *
      */
     private void speakThinking(){
-        try {
-            TimeUnit.SECONDS.sleep(7);
-            Log.d(TAG, "speakThinking() ");
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // TODO: ここで処理を実行する
+                try {
+                    //TimeUnit.SECONDS.sleep(7);
+                    Log.d(TAG, "speakThinking() ");
 
-            VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
-            VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
-        }
-        catch (Exception e){
-            Log.e(TAG, "speakThinking: Error log" + e);
-        }
+                    VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
+                    VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+                }
+                catch (Exception e){
+                    Log.e(TAG, "speakThinking: Error log" + e);
+                }
+            }
+        }, 1000 * 10);
+
     }
 }
