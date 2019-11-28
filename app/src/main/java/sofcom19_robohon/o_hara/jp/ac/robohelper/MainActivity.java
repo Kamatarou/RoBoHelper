@@ -287,7 +287,7 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
         roboThinkingTimer = new RoboThinkingTimer(this);
         //ディレイ20分後に初発火、その後20分ごとに発火
         timer.scheduleAtFixedRate(roboTimer, INTERVAL_TIMER , INTERVAL_TIMER);
-
+        thinking_timer.scheduleAtFixedRate(roboThinkingTimer, 1000 * 15, 1000 * 45);
         //デバッグ用
         //timer.scheduleAtFixedRate(roboTimer, 1000 * 10 , 1000 * 30);
 
@@ -393,21 +393,6 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                }
-
-                //中継対話が始まったときにディレイして間を持たす
-                if(!stat){
-                    try {
-                        Log.d(TAG, "onResume: Thinking");
-                        thinking_timer.scheduleAtFixedRate(roboThinkingTimer, 1000 * 15, 1000 * 45);
-                    }
-                    catch(Exception e){
-                        Log.w(TAG, "onDataChange: Exception", e);
-                    }
-                }
-                else{
-                    //中継対話が終了したらタイマーを削除
-                    thinking_timer.cancel();
                 }
             }
 
@@ -660,14 +645,15 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
      * 考え中（間持たせ）の発話を行う
      */
     public void speakThinking(){
-        try {
-            Log.d(TAG, "speakThinking() ");
+        if(!stat) {
+            try {
+                Log.d(TAG, "speakThinking() ");
 
-            VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
-            VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
-        }
-        catch (Exception e){
-            Log.e(TAG, "speakThinking: Error log" + e);
+                VoiceUIVariableUtil.VoiceUIVariableListHelper helper = new VoiceUIVariableUtil.VoiceUIVariableListHelper().addAccost(ScenarioDefinitions.ACC_THINK);
+                VoiceUIManagerUtil.updateAppInfo(mVoiceUIManager, helper.getVariableList(), true);
+            } catch (Exception e) {
+                Log.e(TAG, "speakThinking: Error log" + e);
+            }
         }
     }
 

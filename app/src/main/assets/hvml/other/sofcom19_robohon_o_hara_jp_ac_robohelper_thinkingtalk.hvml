@@ -29,7 +29,7 @@
             </case>
             <case id="c3">
                 <action index="1">
-                    <speech>ちょっと待ってね…</speech>
+                    <speech>あのね…</speech>
                     <behavior id="assign" type="normal"/>
                 </action>
             </case>
