@@ -621,7 +621,6 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
                     }
                     else {
                         basicWrite(word);
-
                     }
                 break;
 
