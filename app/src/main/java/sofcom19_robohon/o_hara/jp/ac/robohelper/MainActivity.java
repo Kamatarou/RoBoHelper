@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Comment;
 
 import jp.co.sharp.android.rb.addressbook.AddressBookCommonUtils;
 import jp.co.sharp.android.rb.addressbook.AddressBookManager;
@@ -440,6 +441,40 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w("TAG", "Failed to read value :"+ databaseError.toException());
+            }
+        });
+
+        mDatabase.child("stats").child("isSwing").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "onChildChanged: " + dataSnapshot.getKey());
+
+                Boolean isSwing = dataSnapshot.getValue(Boolean.class);
+
+                if(!isSwing){
+                    mDatabase.child("stats").child("isSwing").setValue(true);
+                    sendBroadcast(getIntentForFaceDetection("TRUE"));
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
