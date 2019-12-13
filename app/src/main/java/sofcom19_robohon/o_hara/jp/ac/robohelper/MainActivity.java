@@ -444,37 +444,25 @@ public class MainActivity extends Activity implements MainActivityVoiceUIListene
             }
         });
 
-        mDatabase.child("stats").child("isSwing").addChildEventListener(new ChildEventListener() {
+        mDatabase.child("stats").child("isSwing").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onChildChanged: " + dataSnapshot.getKey());
 
                 Boolean isSwing = dataSnapshot.getValue(Boolean.class);
+                Log.d(TAG, "onChildChanged: " + isSwing);
 
-                if(!isSwing){
-                    mDatabase.child("stats").child("isSwing").setValue(true);
+                if(isSwing){
+                    Log.d(TAG, "onChildChanged: swinghead");
                     sendBroadcast(getIntentForFaceDetection("TRUE"));
                 }
-            }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                mDatabase.child("stats").child("isSwing").setValue(false);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w("TAG", "Failed to read value :"+ databaseError.toException());
             }
         });
 
